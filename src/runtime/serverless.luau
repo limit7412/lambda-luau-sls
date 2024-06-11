@@ -13,22 +13,23 @@ local lambda = {
     while true do
       local response = net.request("http://"..AWS_LAMBDA_RUNTIME_API.."/2018-06-01/runtime/invocation/next")
       local event = net.jsonDecode(response.body)
-      local requestId = response.headers["Lambda-Runtime-Aws-Request-Id"]
+      local requestId: string = response.headers["lambda-runtime-aws-request-id"]
 
       local url = "http://"..AWS_LAMBDA_RUNTIME_API.."/2018-06-01/runtime/invocation/"..requestId.."/response"
-      local ok, body = pcall(callback, event)
+      local ok, body = pcall(callback, event.body)
       if not ok then
         url = "http://"..AWS_LAMBDA_RUNTIME_API.."/2018-06-01/runtime/invocation/"..requestId.."/error"
         body = {
           statusCode = 500,
-          msg = "Internal Lambda Error",
+          body = net.jsonEncode({
+            msg = "Internal Lambda Error",
+          }),
         }
       end
 
       net.request({
         url = url,
         method = "POST",
-        headers = { ["Content-Type"] = "application/json" },
         body = net.jsonEncode(body)
       })
     end
