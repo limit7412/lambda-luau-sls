@@ -1,4 +1,5 @@
 local serverless = require("runtime/serverless")
 
-print('test')
-serverless.lambda.handler('hoge')
+serverless.lambda.handler('hello', function(event)
+  print(event)
+end)

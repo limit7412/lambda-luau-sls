@@ -1,7 +1,6 @@
 local lambda = {
-  handler = function(name: string, callback)
-    print(name)
-    callback()
+  handler = function(name: string, callback: (string) -> (string))
+    callback(name)
   end
 }
 
